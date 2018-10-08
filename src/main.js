@@ -1,32 +1,23 @@
 import input from "./modules/input";
 import loadImages from "./modules/loadImages";
+import Game from "./game/Game";
 
-const canvas = document.createElement("canvas");
-const ctx = canvas.getContext("2d");
-init();
+window.requestAnimFrame = (function() {
+  return (
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    }
+  );
+})();
 
-function init() {
-  document.getElementById("app").appendChild(canvas);
-  setSizeCanvas();
-}
+const game = new Game();
 
-function setSizeCanvas() {
-  const size = checkSizeWindow();
-  canvas.width = size.width;
-  canvas.height = size.height;
-}
-
-function checkSizeWindow() {
-  const windowWidth = document.documentElement.clientWidth;
-  const windowHeight = document.documentElement.clientHeight;
-  const size = { width: 414, height: 736 };
-  if (windowWidth < size.width) {
-    size.width = windowWidth;
-  }
-  if (windowHeight < size.height) {
-    size.height = windowHeight;
-  }
-  return size;
-}
-
-(function() {})();
+window.gameLoop = () => {
+  requestAnimFrame(gameLoop);
+  game.draw();
+};

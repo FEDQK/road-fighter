@@ -20,8 +20,8 @@ function _load(url) {
       resourceCache[url] = img;
 
       if (isReady()) {
-        readyCallbacks.forEach(func => {
-          func();
+        readyCallbacks.forEach(element => {
+          element.func.call(element.context);
         });
       }
     };
@@ -44,8 +44,8 @@ function isReady() {
   return ready;
 }
 
-function onReady(func) {
-  readyCallbacks.push(func);
+function onReady(func, context) {
+  readyCallbacks.push({ func, context });
 }
 
 export default {
