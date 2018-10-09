@@ -44,7 +44,7 @@ export default class Player extends Sprite {
 
     if (input.isDown("LEFT") || input.isDown("a")) {
       if (this.pos.x - HORIZONTAL_SPEED < this.zoneMoving.min) {
-        this.pos.x = this.zoneMoving.min + 10;
+        this.pos.x = this.zoneMoving.min + 5;
         this.stop();
       } else {
         this.pos.x -= HORIZONTAL_SPEED;
@@ -56,7 +56,7 @@ export default class Player extends Sprite {
         this.pos.x + HORIZONTAL_SPEED + this.size.width >
         this.zoneMoving.max
       ) {
-        this.pos.x = this.zoneMoving.max - this.size.width - 10;
+        this.pos.x = this.zoneMoving.max - this.size.width - 5;
         this.stop();
       } else {
         this.pos.x += HORIZONTAL_SPEED;
@@ -75,6 +75,7 @@ export default class Player extends Sprite {
 
   fullStop() {
     this.speed = 0;
+    this.createBroadcastChangeSpeed(this.speed);
   }
 
   createBroadcastChangeSpeed(speed) {

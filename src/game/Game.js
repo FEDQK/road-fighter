@@ -1,13 +1,15 @@
 import Background from "./Background";
 import Player from "./Player";
 import loadImages from "../modules/loadImages";
+import EnemyGenerator from "../generators/EnemyGenerator";
 // import Service from "../service";
 
 export default class Game {
   constructor() {
     loadImages.load([
       "./media/images/bg.jpg",
-      "./media/images/player_type1.png"
+      "./media/images/player_type1.png",
+      "./media/images/enemy_type1.png"
     ]);
     loadImages.onReady(this.init, this);
     this.maxSize = { width: 414, height: 736 };
@@ -23,17 +25,12 @@ export default class Game {
     this.calcScaleGame();
     this.createBackground();
     this.createPlayer();
+    this.createEnemies();
     window.gameLoop();
   }
 
   calcScaleGame() {
-    const scaleWidth = this.canvas.width / this.maxSize.width;
-    const scaleHeight = this.canvas.height / this.maxSize.height;
-    if (scaleWidth < scaleHeight) {
-      this.scale = scaleWidth;
-    } else {
-      this.scale = scaleHeight;
-    }
+    this.scale = this.canvas.width / this.maxSize.width;
   }
 
   setSizeCanvas() {
@@ -77,7 +74,7 @@ export default class Game {
       this.getPlayerPosition(playerSpriteWidth),
       this.getPlayerSize(playerSpriteWidth, playerSpriteHeight),
       this.speed,
-      this.getPlayerZoneMoving()
+      this.getZoneMoving()
     );
   }
 
@@ -95,18 +92,62 @@ export default class Game {
     };
   }
 
-  getPlayerZoneMoving() {
+  getZoneMoving() {
     const margin = 97;
     return {
       min: margin * this.scale,
-      max: (this.canvas.width - margin) * this.scale
+      max: this.canvas.width - margin * this.scale
     };
+  }
+
+  createEnemies() {
+    this.enemies = new EnemyGenerator(
+      this.ctx,
+      this.speed,
+      this.getZoneMoving(),
+      this.scale,
+      { width: this.canvas.width, height: this.canvas.height }
+    );
+  }
+
+  collides(x, y, r, b, x2, y2, r2, b2) {
+    return !(r <= x2 || x > r2 || b <= y2 || y > b2);
+  }
+
+  boxCollides(pos, size, pos2, size2) {
+    return this.collides(
+      pos.x,
+      pos.y,
+      pos.x + size.width,
+      pos.y + size.height,
+      pos2.x,
+      pos2.y,
+      pos2.x + size2.width,
+      pos2.y + size2.height
+    );
+  }
+
+  checkCollisions() {
+    this.enemies.enemies.forEach((enemy, index) => {
+      if (
+        this.boxCollides(
+          this.player.pos,
+          this.player.size,
+          enemy.pos,
+          enemy.size
+        )
+      ) {
+        this.player.fullStop();
+        this.enemies.setNewPositionAndSpeedForEnemy(enemy, index);
+      }
+    });
   }
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.background.draw();
     this.player.draw();
-    // console.log(Date.now());
+    this.enemies.draw();
+    this.checkCollisions();
   }
 }
