@@ -1,4 +1,5 @@
 import Sprite from "./Sprite";
+import Service from "../service";
 
 export default class Background {
   constructor(ctx, src, pos, size, speed, canvasSize) {
@@ -9,6 +10,7 @@ export default class Background {
     this.speed = speed;
     this.canvasSize = canvasSize;
     this.tiles = [];
+    this.observer = Service.get("Observer");
     this.init();
   }
 
@@ -24,6 +26,9 @@ export default class Background {
       );
       this.tiles.push(sprite);
     }
+    this.observer.subscribe(data => {
+      this.speed = data.speed;
+    });
   }
 
   calcAdditionalSpace(countTiles) {
