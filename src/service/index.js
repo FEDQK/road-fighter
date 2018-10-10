@@ -7,5 +7,5 @@ export default class Service {
 }
 
 Service.list = {
-  Observer: new EventObserver()
+  SpeedObserver: new EventObserver()
 };

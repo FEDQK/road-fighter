@@ -2,7 +2,10 @@ import Background from "./Background";
 import Player from "./Player";
 import loadImages from "../modules/loadImages";
 import EnemyGenerator from "../generators/EnemyGenerator";
-// import Service from "../service";
+import Time from "./Time";
+import Service from "../service";
+import Map from "./Map";
+import utils from "../utils";
 
 export default class Game {
   constructor() {
@@ -12,44 +15,53 @@ export default class Game {
       "./media/images/enemy_type1.png"
     ]);
     loadImages.onReady(this.init, this);
-    this.maxSize = { width: 414, height: 736 };
+    this.defaultSize = { width: 414, height: 736 };
     this.speed = 0;
-    // this.observer = Service.get("Observer");
+    this.maxDistance = 1000;
+    this.isGameEnd = false;
+    this.dataResults = [
+      ["test", 130000],
+      ["test2", 150500],
+      ["test3", 102500],
+      ["test", 130000],
+      ["test2", 150500],
+      ["test3", 102500],
+      ["test", 130000],
+      ["test2", 150500],
+      ["test3", 102500],
+      ["test", 130000],
+      ["test2", 150500],
+      ["test3", 102500],
+      ["test", 130000],
+      ["test2", 150500],
+      ["test3", 102500]
+    ];
   }
 
   init() {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
-    document.getElementById("app").appendChild(this.canvas);
+    this.app = document.getElementById("app");
+    this.app.appendChild(this.canvas);
     this.setSizeCanvas();
     this.calcScaleGame();
     this.createBackground();
     this.createPlayer();
     this.createEnemies();
+    this.createTime();
+    this.createDistance();
+    // this.drawTable();
     window.gameLoop();
   }
 
   calcScaleGame() {
-    this.scale = this.canvas.width / this.maxSize.width;
+    this.scale = this.canvas.width / this.defaultSize.width;
+    this.scaleY = this.canvas.height / this.defaultSize.height;
   }
 
   setSizeCanvas() {
-    const { width, height } = this.getSizeWindow();
-    this.canvas.width = width;
-    this.canvas.height = height;
-  }
-
-  getSizeWindow() {
-    const windowWidth = document.documentElement.clientWidth;
-    const windowHeight = document.documentElement.clientHeight;
-    const size = Object.assign({}, this.maxSize);
-    if (windowWidth < size.width) {
-      size.width = windowWidth;
-    }
-    if (windowHeight < size.height) {
-      size.height = windowHeight;
-    }
-    return size;
+    this.canvas.width = document.documentElement.clientWidth;
+    this.canvas.height = document.documentElement.clientHeight;
   }
 
   createBackground() {
@@ -143,11 +155,77 @@ export default class Game {
     });
   }
 
+  createTime() {
+    this.time = new Time(this.ctx, "#fff", 16, { x: 20, y: 30 }, this.scale);
+  }
+
+  createDistance() {
+    this.distance = new Map(this.ctx, this.maxDistance, this.speed, {
+      x: this.scale,
+      y: this.scaleY
+    });
+  }
+
+  checkGameOver() {
+    if (this.distance.distance >= this.maxDistance) {
+      this.isGameEnd = true;
+      this.player.fullStop();
+    }
+  }
+
+  drawTable() {
+    this.sortDataResults();
+    const divTable = document.createElement("div");
+    divTable.id = "results";
+    const table = document.createElement("table");
+    if (this.dataResults.length > 10) {
+      this.dataResults.length = 10;
+    }
+    this.drawHeaderTable(table);
+    this.dataResults.forEach((data, index) => {
+      const tr = document.createElement("tr");
+      data.unshift(index + 1);
+      data.forEach((value, dataIndex) => {
+        const td = document.createElement("td");
+        if (dataIndex == 2) {
+          td.innerHTML = `${utils.formatTime(
+            utils.getMinutes(value)
+          )}:${utils.formatTime(utils.getSeconds(value))}`;
+        } else {
+          td.innerHTML = value;
+        }
+
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+    divTable.appendChild(table);
+    this.app.appendChild(divTable);
+  }
+
+  drawHeaderTable(table) {
+    const dataHeader = ["№", "Name", "Time"];
+    const tr = document.createElement("tr");
+    dataHeader.forEach(value => {
+      const th = document.createElement("th");
+      th.innerHTML = value;
+      tr.appendChild(th);
+    });
+    table.appendChild(tr);
+  }
+
+  sortDataResults() {
+    this.dataResults = this.dataResults.sort((a, b) => a[1] - b[1]);
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.background.draw();
     this.player.draw();
     this.enemies.draw();
+    this.time.draw();
+    this.distance.draw();
     this.checkCollisions();
+    this.checkGameOver();
   }
 }

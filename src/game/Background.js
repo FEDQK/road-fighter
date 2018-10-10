@@ -10,7 +10,7 @@ export default class Background {
     this.speed = speed;
     this.canvasSize = canvasSize;
     this.tiles = [];
-    this.observer = Service.get("Observer");
+    this.observer = Service.get("SpeedObserver");
     this.init();
   }
 

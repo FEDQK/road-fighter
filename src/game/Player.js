@@ -17,7 +17,7 @@ export default class Player extends Sprite {
     this.size = size;
     this.speed = speed;
     this.zoneMoving = zoneMoving;
-    this.observer = Service.get("Observer");
+    this.observer = Service.get("SpeedObserver");
   }
 
   draw() {
@@ -27,10 +27,11 @@ export default class Player extends Sprite {
 
   handleInput() {
     if (input.isDown("DOWN") || input.isDown("s")) {
-      if (this.speed <= 0) {
+      const newSpeed = (this.speed * 10 - SPEED_DOWN * 10) / 10;
+      if (newSpeed <= 0) {
         this.speed = 0;
       } else {
-        this.speed = (this.speed * 10 - SPEED_DOWN * 10) / 10;
+        this.speed = newSpeed;
       }
       this.createBroadcastChangeSpeed(this.speed);
     }

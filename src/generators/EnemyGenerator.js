@@ -24,7 +24,7 @@ export default class EnemyGenerator {
     this.scale = scale;
     this.canvasSize = canvasSize;
     this.enemies = [];
-    this.observer = Service.get("Observer");
+    this.observer = Service.get("SpeedObserver");
     this.observer.subscribe(data => {
       this.speed = data.speed;
     });
@@ -45,14 +45,16 @@ export default class EnemyGenerator {
   }
 
   getRandomPosition(index, width) {
-    const minPositionX =
-      this.zone.min + index * this.getZoneForOneEnemy() * this.scale;
+    const minPositionX = this.zone.min + index * this.getZoneForOneEnemy();
     return {
       x: utils.getRandomInt(
         minPositionX,
-        minPositionX + this.getZoneForOneEnemy() * this.scale - width
+        minPositionX + this.getZoneForOneEnemy() - width
       ),
-      y: utils.getRandomInt(MIN_ZONE_SPAWN, MAX_ZONE_SPAWN)
+      y: utils.getRandomInt(
+        MIN_ZONE_SPAWN * this.scale,
+        MAX_ZONE_SPAWN * this.scale
+      )
     };
   }
 
@@ -77,7 +79,7 @@ export default class EnemyGenerator {
     this.enemies.forEach((enemy, index) => {
       enemy.draw();
       if (
-        enemy.pos.y < MAX_ZONE_SPAWN ||
+        enemy.pos.y < MAX_ZONE_SPAWN * this.scale ||
         enemy.pos.y > this.canvasSize.height
       ) {
         this.setNewPositionAndSpeedForEnemy(enemy, index);

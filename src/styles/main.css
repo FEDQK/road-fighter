@@ -8,3 +8,37 @@ canvas {
   display: block;
   margin: 0 auto;
 }
+
+#results {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background: #fff;
+}
+
+#results > table {
+  width: 100%;
+  text-align: center;
+  border-spacing: 0;
+  padding: 10px;
+}
+
+#results > table > tr > td,
+#results > table > tr > th {
+  border-left: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-size: 24px;
+}
+
+#results > table > tr:first-child > th {
+  border-top: 1px solid #000;
+}
+
+#results > table > tr > td:last-child,
+#results > table > tr > th:last-child {
+  border-right: 1px solid #000;
+}

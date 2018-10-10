@@ -10,7 +10,7 @@ export default class Enemy extends Sprite {
     this.size = size;
     this.speed = speed;
     this.speedGame = 0;
-    this.observer = Service.get("Observer");
+    this.observer = Service.get("SpeedObserver");
     this.observer.subscribe(data => {
       this.speedGame = data.speed;
     });

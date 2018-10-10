@@ -18,6 +18,8 @@ window.requestAnimFrame = (function() {
 const game = new Game();
 
 window.gameLoop = () => {
-  requestAnimFrame(gameLoop);
-  game.draw();
+  if (!game.isGameEnd) {
+    requestAnimFrame(gameLoop);
+    game.draw();
+  }
 };
