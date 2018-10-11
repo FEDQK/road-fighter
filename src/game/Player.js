@@ -1,6 +1,7 @@
 import Sprite from "./Sprite";
 import input from "../modules/input";
 import Service from "../service";
+import Sound from "./Sound";
 
 const MAX_SPEED = 10;
 const SPEED_UP = 0.05;
@@ -18,6 +19,7 @@ export default class Player extends Sprite {
     this.speed = speed;
     this.zoneMoving = zoneMoving;
     this.observer = Service.get("SpeedObserver");
+    this.app = document.getElementById("app");
   }
 
   draw() {
@@ -71,6 +73,8 @@ export default class Player extends Sprite {
     } else {
       this.speed = 0;
     }
+    const sxfZap = new Sound(this.app, "./media/sounds/sfx_zap.mp3", 1);
+    sxfZap.play();
     this.createBroadcastChangeSpeed(this.speed);
   }
 

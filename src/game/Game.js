@@ -5,6 +5,7 @@ import EnemyGenerator from "../generators/EnemyGenerator";
 import Time from "./Time";
 import Map from "./Map";
 import Service from "../service";
+import Sound from "./Sound";
 
 export default class Game {
   constructor(app) {
@@ -31,6 +32,7 @@ export default class Game {
     this.createPlayer();
     this.createEnemies();
     this.createDistance();
+    this.createSound();
     window.gameLoop();
   }
 
@@ -129,6 +131,7 @@ export default class Game {
           enemy.size
         )
       ) {
+        this.sfxStop.play();
         this.player.fullStop();
         this.enemies.setNewPositionAndSpeedForEnemy(enemy, index);
       }
@@ -147,7 +150,7 @@ export default class Game {
   }
 
   startGame() {
-    this.distance.distance = 990;
+    this.distance.distance = 900;
     this.enemies.generate();
     this.isGameEnd = false;
     this.createTime();
@@ -174,6 +177,12 @@ export default class Game {
     if (this.distance.distance >= this.maxDistance) {
       this.gameOver();
     }
+  }
+
+  createSound() {
+    this.music = new Sound(this.app, "./media/sounds/music.mp3", 0.02);
+    this.music.play();
+    this.sfxStop = new Sound(this.app, "./media/sounds/sfx_stop.mp3", 1);
   }
 
   draw() {
