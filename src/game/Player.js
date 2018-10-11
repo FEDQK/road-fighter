@@ -2,6 +2,7 @@ import Sprite from "./Sprite";
 import input from "../modules/input";
 import Service from "../service";
 import Sound from "./Sound";
+import gyro from "../modules/gyro";
 
 const MAX_SPEED = 10;
 const SPEED_UP = 0.05;
@@ -20,6 +21,29 @@ export default class Player extends Sprite {
     this.zoneMoving = zoneMoving;
     this.observer = Service.get("SpeedObserver");
     this.app = document.getElementById("app");
+    this.addGyroscopeControls();
+  }
+
+  checkGyroscope() {
+    return gyro.getOrientation().beta && gyro.getOrientation().gamma;
+  }
+
+  addGyroscopeControls() {
+    if (this.checkGyroscope()) {
+      gyro.frequency = 20;
+      gyro.startTracking(orientation => {
+        if (orientation.beta < 20) {
+          this.moveUp();
+        } else {
+          this.moveDown();
+        }
+        if (orientation.gamma < 0) {
+          this.moveLeft();
+        } else {
+          this.moveRight();
+        }
+      });
+    }
   }
 
   draw() {
@@ -27,43 +51,56 @@ export default class Player extends Sprite {
     this.handleInput();
   }
 
+  moveDown() {
+    const newSpeed = (this.speed * 10 - SPEED_DOWN * 10) / 10;
+    if (newSpeed <= 0) {
+      this.speed = 0;
+    } else {
+      this.speed = newSpeed;
+    }
+    this.createBroadcastChangeSpeed(this.speed);
+  }
+
+  moveUp() {
+    if (this.speed != MAX_SPEED) {
+      this.speed = (this.speed * 10 + SPEED_UP * 10) / 10;
+    }
+    this.createBroadcastChangeSpeed(this.speed);
+  }
+
+  moveLeft() {
+    if (this.pos.x - HORIZONTAL_SPEED < this.zoneMoving.min) {
+      this.pos.x = this.zoneMoving.min + 5;
+      this.stop();
+    } else {
+      this.pos.x -= HORIZONTAL_SPEED;
+    }
+  }
+
+  moveRight() {
+    if (this.pos.x + HORIZONTAL_SPEED + this.size.width > this.zoneMoving.max) {
+      this.pos.x = this.zoneMoving.max - this.size.width - 5;
+      this.stop();
+    } else {
+      this.pos.x += HORIZONTAL_SPEED;
+    }
+  }
+
   handleInput() {
     if (input.isDown("DOWN") || input.isDown("s")) {
-      const newSpeed = (this.speed * 10 - SPEED_DOWN * 10) / 10;
-      if (newSpeed <= 0) {
-        this.speed = 0;
-      } else {
-        this.speed = newSpeed;
-      }
-      this.createBroadcastChangeSpeed(this.speed);
+      this.moveDown();
     }
 
     if (input.isDown("UP") || input.isDown("w")) {
-      if (this.speed != MAX_SPEED) {
-        this.speed = (this.speed * 10 + SPEED_UP * 10) / 10;
-      }
-      this.createBroadcastChangeSpeed(this.speed);
+      this.moveUp();
     }
 
     if (input.isDown("LEFT") || input.isDown("a")) {
-      if (this.pos.x - HORIZONTAL_SPEED < this.zoneMoving.min) {
-        this.pos.x = this.zoneMoving.min + 5;
-        this.stop();
-      } else {
-        this.pos.x -= HORIZONTAL_SPEED;
-      }
+      this.moveLeft();
     }
 
     if (input.isDown("RIGHT") || input.isDown("d")) {
-      if (
-        this.pos.x + HORIZONTAL_SPEED + this.size.width >
-        this.zoneMoving.max
-      ) {
-        this.pos.x = this.zoneMoving.max - this.size.width - 5;
-        this.stop();
-      } else {
-        this.pos.x += HORIZONTAL_SPEED;
-      }
+      this.moveRight();
     }
   }
 

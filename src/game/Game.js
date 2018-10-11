@@ -6,6 +6,7 @@ import Time from "./Time";
 import Map from "./Map";
 import Service from "../service";
 import Sound from "./Sound";
+import gyro from "../modules/gyro";
 
 export default class Game {
   constructor(app) {
@@ -29,7 +30,6 @@ export default class Game {
     this.setSizeCanvas();
     this.calcScaleGame();
     this.createBackground();
-    this.createPlayer();
     this.createEnemies();
     this.createDistance();
     this.createSound();
@@ -153,6 +153,7 @@ export default class Game {
     this.distance.distance = 900;
     this.enemies.generate();
     this.isGameEnd = false;
+    this.createPlayer();
     this.createTime();
     const gameEndObserver = Service.get("GameEndObserver");
     gameEndObserver.broadcast({ isGameEnd: this.isGameEnd });
@@ -167,6 +168,7 @@ export default class Game {
 
   gameOver() {
     this.saveResult();
+    gyro.stopTracking();
     this.player.fullStop();
     this.isGameEnd = true;
     this.scenes = Service.get("scenes");
