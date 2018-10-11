@@ -1,6 +1,8 @@
-import input from "./modules/input";
-import loadImages from "./modules/loadImages";
-import Game from "./game/Game";
+// import Game from "./game/Game";
+// import Results from "./scenes/Results";
+// import Menu from "./scenes/Menu";
+
+import Service from "./service";
 
 window.requestAnimFrame = (function() {
   return (
@@ -15,11 +17,21 @@ window.requestAnimFrame = (function() {
   );
 })();
 
-const game = new Game();
+// const game = new Game(app);
+// const results = new Results(app);
+// const menu = new Menu(app);
+
+const scenes = Service.get("scenes");
+const gameEndObserver = Service.get("GameEndObserver");
+gameEndObserver.subscribe(() => {
+  window.gameLoop();
+});
+
+scenes.menu.draw();
 
 window.gameLoop = () => {
-  if (!game.isGameEnd) {
+  if (!scenes.game.isGameEnd) {
     requestAnimFrame(gameLoop);
-    game.draw();
+    scenes.game.draw();
   }
 };

@@ -32,6 +32,7 @@ export default class EnemyGenerator {
   }
 
   generate() {
+    this.enemies = [];
     for (let i = 0; i < COUNT_ENEMIES; i++) {
       const enemy = new Enemy(
         this.ctx,

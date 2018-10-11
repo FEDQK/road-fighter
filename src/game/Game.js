@@ -3,12 +3,12 @@ import Player from "./Player";
 import loadImages from "../modules/loadImages";
 import EnemyGenerator from "../generators/EnemyGenerator";
 import Time from "./Time";
-import Service from "../service";
 import Map from "./Map";
-import utils from "../utils";
+import Service from "../service";
 
 export default class Game {
-  constructor() {
+  constructor(app) {
+    this.app = app;
     loadImages.load([
       "./media/images/bg.jpg",
       "./media/images/player_type1.png",
@@ -18,39 +18,19 @@ export default class Game {
     this.defaultSize = { width: 414, height: 736 };
     this.speed = 0;
     this.maxDistance = 1000;
-    this.isGameEnd = false;
-    this.dataResults = [
-      ["test", 130000],
-      ["test2", 150500],
-      ["test3", 102500],
-      ["test", 130000],
-      ["test2", 150500],
-      ["test3", 102500],
-      ["test", 130000],
-      ["test2", 150500],
-      ["test3", 102500],
-      ["test", 130000],
-      ["test2", 150500],
-      ["test3", 102500],
-      ["test", 130000],
-      ["test2", 150500],
-      ["test3", 102500]
-    ];
+    this.isGameEnd = true;
   }
 
   init() {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
-    this.app = document.getElementById("app");
     this.app.appendChild(this.canvas);
     this.setSizeCanvas();
     this.calcScaleGame();
     this.createBackground();
     this.createPlayer();
     this.createEnemies();
-    this.createTime();
     this.createDistance();
-    // this.drawTable();
     window.gameLoop();
   }
 
@@ -166,56 +146,34 @@ export default class Game {
     });
   }
 
+  startGame() {
+    this.distance.distance = 990;
+    this.enemies.generate();
+    this.isGameEnd = false;
+    this.createTime();
+    const gameEndObserver = Service.get("GameEndObserver");
+    gameEndObserver.broadcast({ isGameEnd: this.isGameEnd });
+  }
+
+  saveResult() {
+    let results = JSON.parse(localStorage.getItem("results")) || [];
+    results.push(["player", this.time.time]);
+    const newResults = JSON.stringify(results);
+    localStorage.setItem("results", newResults);
+  }
+
+  gameOver() {
+    this.saveResult();
+    this.player.fullStop();
+    this.isGameEnd = true;
+    this.scenes = Service.get("scenes");
+    this.scenes.results.draw();
+  }
+
   checkGameOver() {
     if (this.distance.distance >= this.maxDistance) {
-      this.isGameEnd = true;
-      this.player.fullStop();
+      this.gameOver();
     }
-  }
-
-  drawTable() {
-    this.sortDataResults();
-    const divTable = document.createElement("div");
-    divTable.id = "results";
-    const table = document.createElement("table");
-    if (this.dataResults.length > 10) {
-      this.dataResults.length = 10;
-    }
-    this.drawHeaderTable(table);
-    this.dataResults.forEach((data, index) => {
-      const tr = document.createElement("tr");
-      data.unshift(index + 1);
-      data.forEach((value, dataIndex) => {
-        const td = document.createElement("td");
-        if (dataIndex == 2) {
-          td.innerHTML = `${utils.formatTime(
-            utils.getMinutes(value)
-          )}:${utils.formatTime(utils.getSeconds(value))}`;
-        } else {
-          td.innerHTML = value;
-        }
-
-        tr.appendChild(td);
-      });
-      table.appendChild(tr);
-    });
-    divTable.appendChild(table);
-    this.app.appendChild(divTable);
-  }
-
-  drawHeaderTable(table) {
-    const dataHeader = ["№", "Name", "Time"];
-    const tr = document.createElement("tr");
-    dataHeader.forEach(value => {
-      const th = document.createElement("th");
-      th.innerHTML = value;
-      tr.appendChild(th);
-    });
-    table.appendChild(tr);
-  }
-
-  sortDataResults() {
-    this.dataResults = this.dataResults.sort((a, b) => a[1] - b[1]);
   }
 
   draw() {

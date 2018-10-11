@@ -20,7 +20,7 @@ export default class Map {
     this.speed = speed;
     this.scale = scale;
     this.lastTime = Date.now();
-    this.distance = 0;
+    this.distance = 990;
     this.maxDistance = maxDistance;
     this.speedObserver = Service.get("SpeedObserver");
     this.speedObserver.subscribe(data => {
