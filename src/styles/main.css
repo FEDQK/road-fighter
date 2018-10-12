@@ -2,6 +2,7 @@
   padding: 0;
   margin: 0;
   font-family: Montserrat;
+  font-size: 16px;
 }
 
 canvas {
@@ -71,4 +72,8 @@ canvas {
 #menu .button {
   min-width: 36%;
   margin-bottom: 5%;
+}
+.change-color select,
+.change-name input {
+  margin-left: 10px;
 }

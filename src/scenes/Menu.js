@@ -1,4 +1,5 @@
 import Service from "../service";
+import Scene from "./Scene";
 
 const BUTTONS = [
   {
@@ -18,15 +19,10 @@ const BUTTONS = [
   }
 ];
 
-export default class Menu {
+export default class Menu extends Scene {
   constructor(app) {
+    super(app, "menu");
     this.app = app;
-    this.init();
-  }
-
-  init() {
-    this.divMenu = document.createElement("div");
-    this.divMenu.id = "menu";
     this.cteateMenu();
   }
 
@@ -37,19 +33,14 @@ export default class Menu {
       button.id = dataButton.id;
       button.classList.add("button");
       this.handleClick(button, dataButton);
-      this.divMenu.appendChild(button);
+      super.div.appendChild(button);
     });
-    this.app.appendChild(this.divMenu);
-  }
-
-  closeMenu() {
-    this.divMenu.classList.add("hidden");
   }
 
   handleClick(button, dataButton) {
     button.addEventListener("click", () => {
       const scenes = Service.get("scenes");
-      this.closeMenu();
+      super.closeScene();
       if (dataButton.scene == "game") {
         scenes[dataButton.scene].startGame();
       } else {
@@ -59,6 +50,7 @@ export default class Menu {
   }
 
   draw() {
-    this.divMenu.classList.remove("hidden");
+    super.draw();
+    super.showScene();
   }
 }

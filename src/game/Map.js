@@ -15,12 +15,13 @@ const MPLAYER_SIZE = {
 };
 
 export default class Map {
-  constructor(ctx, maxDistance, speed, scale) {
+  constructor(ctx, maxDistance, speed, scale, srcPlayerSprite) {
     this.ctx = ctx;
     this.speed = speed;
     this.scale = scale;
+    this.srcPlayerSprite = srcPlayerSprite;
     this.lastTime = Date.now();
-    this.distance = 990;
+    this.distance = 0;
     this.maxDistance = maxDistance;
     this.speedObserver = Service.get("SpeedObserver");
     this.speedObserver.subscribe(data => {
@@ -39,7 +40,6 @@ export default class Map {
       } else {
         this.distance = newDistance;
       }
-      console.log("speed", this.speed, "distance", this.distance);
     }
   }
 
@@ -86,7 +86,7 @@ export default class Map {
   createPlayerOnMap() {
     this.mPlayer = new Sprite(
       this.ctx,
-      "./media/images/player_type1.png",
+      this.srcPlayerSprite,
       this.getPositionMPlayer(),
       {
         width: MPLAYER_SIZE.width * this.scale.x,

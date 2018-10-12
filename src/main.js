@@ -1,7 +1,3 @@
-// import Game from "./game/Game";
-// import Results from "./scenes/Results";
-// import Menu from "./scenes/Menu";
-
 import Service from "./service";
 
 window.requestAnimFrame = (function() {
@@ -16,10 +12,6 @@ window.requestAnimFrame = (function() {
     }
   );
 })();
-
-// const game = new Game(app);
-// const results = new Results(app);
-// const menu = new Menu(app);
 
 const scenes = Service.get("scenes");
 const gameEndObserver = Service.get("GameEndObserver");

@@ -1,16 +1,11 @@
 import utils from "../utils";
-import Service from "../service";
+import Scene from "./Scene";
 
-export default class Results {
+export default class Results extends Scene {
   constructor(app) {
+    super(app, "results");
     this.app = app;
     this.dataResults = [];
-    this.init();
-  }
-
-  init() {
-    this.divTable = document.createElement("div");
-    this.divTable.id = "results";
   }
 
   loadResults() {
@@ -57,41 +52,15 @@ export default class Results {
       });
       table.appendChild(tr);
     });
-    this.divTable.appendChild(table);
-  }
-
-  createButton() {
-    const button = document.createElement("button");
-    button.innerText = "Menu";
-    button.id = "backToMenu";
-    button.classList.add("button");
-    this.handleClickButton(button);
-    this.divTable.appendChild(button);
-  }
-
-  handleClickButton(button) {
-    button.addEventListener("click", () => {
-      this.closeResults();
-      const scenes = Service.get("scenes");
-
-      scenes.menu.draw();
-    });
-  }
-
-  closeResults() {
-    this.divTable.classList.add("hidden");
-  }
-
-  clearContent() {
-    this.divTable.innerHTML = "";
+    super.div.appendChild(table);
   }
 
   draw() {
-    this.divTable.classList.remove("hidden");
-    this.clearContent();
+    super.showScene();
+    super.clearContent();
     this.loadResults();
     this.createTable();
-    this.createButton();
-    this.app.appendChild(this.divTable);
+    super.createButtonBackToMenu();
+    super.draw();
   }
 }

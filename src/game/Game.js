@@ -7,13 +7,18 @@ import Map from "./Map";
 import Service from "../service";
 import Sound from "./Sound";
 import gyro from "../modules/gyro";
+import PlayerInfo from "./PlayerInfo";
 
 export default class Game {
   constructor(app) {
     this.app = app;
     loadImages.load([
       "./media/images/bg.jpg",
-      "./media/images/player_type1.png",
+      "./media/images/player_black.png",
+      "./media/images/player_blue.png",
+      "./media/images/player_green.png",
+      "./media/images/player_orange.png",
+      "./media/images/player_yellow.png",
       "./media/images/enemy_type1.png"
     ]);
     loadImages.onReady(this.init, this);
@@ -31,7 +36,6 @@ export default class Game {
     this.calcScaleGame();
     this.createBackground();
     this.createEnemies();
-    this.createDistance();
     this.createSound();
     window.gameLoop();
   }
@@ -64,7 +68,7 @@ export default class Game {
     const playerSpriteHeight = 50;
     this.player = new Player(
       this.ctx,
-      "./media/images/player_type1.png",
+      `./media/images/player_${this.playerInfo.data.type}.png`,
       this.getPlayerPosition(playerSpriteWidth),
       this.getPlayerSize(playerSpriteWidth, playerSpriteHeight),
       this.speed,
@@ -142,26 +146,33 @@ export default class Game {
     this.time = new Time(this.ctx, "#fff", 16, { x: 20, y: 30 }, this.scale);
   }
 
-  createDistance() {
-    this.distance = new Map(this.ctx, this.maxDistance, this.speed, {
-      x: this.scale,
-      y: this.scaleY
-    });
+  createMap() {
+    this.map = new Map(
+      this.ctx,
+      this.maxDistance,
+      this.speed,
+      {
+        x: this.scale,
+        y: this.scaleY
+      },
+      `./media/images/player_${this.playerInfo.data.type}.png`
+    );
   }
 
   startGame() {
-    this.distance.distance = 900;
+    this.playerInfo = new PlayerInfo();
     this.enemies.generate();
     this.isGameEnd = false;
     this.createPlayer();
     this.createTime();
+    this.createMap();
     const gameEndObserver = Service.get("GameEndObserver");
     gameEndObserver.broadcast({ isGameEnd: this.isGameEnd });
   }
 
   saveResult() {
     let results = JSON.parse(localStorage.getItem("results")) || [];
-    results.push(["player", this.time.time]);
+    results.push([this.playerInfo.data.name, this.time.time]);
     const newResults = JSON.stringify(results);
     localStorage.setItem("results", newResults);
   }
@@ -176,7 +187,7 @@ export default class Game {
   }
 
   checkGameOver() {
-    if (this.distance.distance >= this.maxDistance) {
+    if (this.map.distance >= this.maxDistance) {
       this.gameOver();
     }
   }
@@ -193,7 +204,7 @@ export default class Game {
     this.player.draw();
     this.enemies.draw();
     this.time.draw();
-    this.distance.draw();
+    this.map.draw();
     this.checkCollisions();
     this.checkGameOver();
   }
