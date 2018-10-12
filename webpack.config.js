@@ -19,7 +19,11 @@ module.exports = {
         use: {
           loader: "babel-loader"
         }
-      }
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      },
     ]
   },
   plugins: [
@@ -39,6 +43,13 @@ module.exports = {
         collapseWhitespace: true,
         removeAttributeQuotes: true
       }
-    })
-  ]
+    }),
+    // new CleanWebpackPlugin(
+    //   path.resolve(__dirname, 'dist'),
+    // )
+  ],
+  devServer: {
+    port: 9000,
+    contentBase: path.join(__dirname, 'dist'),
+  }
 };
