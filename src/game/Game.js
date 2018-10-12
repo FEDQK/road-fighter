@@ -182,7 +182,7 @@ export default class Game {
   }
 
   createSound() {
-    this.music = new Sound(this.app, "./media/sounds/music.mp3", 0.02);
+    this.music = new Sound(this.app, "./media/sounds/music.mp3", 0.02, true);
     this.music.play();
     this.sfxStop = new Sound(this.app, "./media/sounds/sfx_stop.mp3", 1);
   }

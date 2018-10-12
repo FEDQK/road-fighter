@@ -1,8 +1,9 @@
 export default class Sound {
-  constructor(app, src, volume) {
+  constructor(app, src, volume, loop = false) {
     this.app = app;
     this.src = src;
     this.volume = volume;
+    this.loop = loop;
     this.init();
   }
 
@@ -10,6 +11,7 @@ export default class Sound {
     this.sound = document.createElement("audio");
     this.sound.src = this.src;
     this.sound.volume = this.volume;
+    this.sound.loop = this.loop;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
     this.sound.style.display = "none";

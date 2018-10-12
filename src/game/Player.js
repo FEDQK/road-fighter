@@ -21,6 +21,7 @@ export default class Player extends Sprite {
     this.zoneMoving = zoneMoving;
     this.observer = Service.get("SpeedObserver");
     this.app = document.getElementById("app");
+    this.sxfZap = new Sound(this.app, "./media/sounds/sfx_zap.mp3", 1);
     this.addGyroscopeControls();
   }
 
@@ -110,8 +111,7 @@ export default class Player extends Sprite {
     } else {
       this.speed = 0;
     }
-    const sxfZap = new Sound(this.app, "./media/sounds/sfx_zap.mp3", 1);
-    sxfZap.play();
+    this.sxfZap.play();
     this.createBroadcastChangeSpeed(this.speed);
   }
 
