@@ -1,5 +1,5 @@
 import Service from "./service";
-import '../styles/imports.css';
+import "./styles/imports.css";
 
 window.requestAnimFrame = (function() {
   return (
