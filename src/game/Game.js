@@ -1,25 +1,25 @@
-import Background from "./Background";
-import Player from "./Player";
-import loadImages from "../modules/loadImages";
-import EnemyGenerator from "../generators/EnemyGenerator";
-import Time from "./Time";
-import Map from "./Map";
-import Service from "../service";
-import Sound from "./Sound";
-import gyro from "../modules/gyro";
-import PlayerInfo from "./PlayerInfo";
+import Background from './Background';
+import Player from './Player';
+import loadImages from '../modules/loadImages';
+import EnemyGenerator from '../generators/EnemyGenerator';
+import Time from './Time';
+import Map from './Map';
+import Service from '../service';
+import Sound from './Sound';
+import gyro from '../modules/gyro';
+import PlayerInfo from './PlayerInfo';
 
 export default class Game {
   constructor(app) {
     this.app = app;
     loadImages.load([
-      "./media/images/bg.jpg",
-      "./media/images/player_black.png",
-      "./media/images/player_blue.png",
-      "./media/images/player_green.png",
-      "./media/images/player_orange.png",
-      "./media/images/player_yellow.png",
-      "./media/images/enemy_type1.png"
+      './media/images/bg.jpg',
+      './media/images/player_black.png',
+      './media/images/player_blue.png',
+      './media/images/player_green.png',
+      './media/images/player_orange.png',
+      './media/images/player_yellow.png',
+      './media/images/enemy_type1.png',
     ]);
     loadImages.onReady(this.init, this);
     this.defaultSize = { width: 414, height: 736 };
@@ -29,8 +29,8 @@ export default class Game {
   }
 
   init() {
-    this.canvas = document.createElement("canvas");
-    this.ctx = this.canvas.getContext("2d");
+    this.canvas = document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
     this.app.appendChild(this.canvas);
     this.setSizeCanvas();
     this.calcScaleGame();
@@ -46,8 +46,9 @@ export default class Game {
   }
 
   setSizeCanvas() {
-    this.canvas.width = document.documentElement.clientWidth;
     this.canvas.height = document.documentElement.clientHeight;
+    this.canvas.width =
+      (this.canvas.height / this.defaultSize.height) * this.defaultSize.width;
   }
 
   createBackground() {
@@ -55,11 +56,11 @@ export default class Game {
     const height = widthBackgroundImg * this.scale;
     this.background = new Background(
       this.ctx,
-      "./media/images/bg.jpg",
+      './media/images/bg.jpg',
       { x: 0, y: 0 },
       { width: this.canvas.width, height: height },
       this.speed,
-      { width: this.canvas.width, height: this.canvas.height }
+      { width: this.canvas.width, height: this.canvas.height },
     );
   }
 
@@ -72,21 +73,21 @@ export default class Game {
       this.getPlayerPosition(playerSpriteWidth),
       this.getPlayerSize(playerSpriteWidth, playerSpriteHeight),
       this.speed,
-      this.getZoneMoving()
+      this.getZoneMoving(),
     );
   }
 
   getPlayerPosition(playerSpriteWidth) {
     return {
       x: this.canvas.width / 2 - (playerSpriteWidth * this.scale) / 2,
-      y: this.canvas.height / 2 + this.canvas.height / 4
+      y: this.canvas.height / 2 + this.canvas.height / 4,
     };
   }
 
   getPlayerSize(playerSpriteWidth, playerSpriteHeight) {
     return {
       width: playerSpriteWidth * this.scale,
-      height: playerSpriteHeight * this.scale
+      height: playerSpriteHeight * this.scale,
     };
   }
 
@@ -94,7 +95,7 @@ export default class Game {
     const margin = 97;
     return {
       min: margin * this.scale,
-      max: this.canvas.width - margin * this.scale
+      max: this.canvas.width - margin * this.scale,
     };
   }
 
@@ -104,7 +105,7 @@ export default class Game {
       this.speed,
       this.getZoneMoving(),
       this.scale,
-      { width: this.canvas.width, height: this.canvas.height }
+      { width: this.canvas.width, height: this.canvas.height },
     );
   }
 
@@ -121,7 +122,7 @@ export default class Game {
       pos2.x,
       pos2.y,
       pos2.x + size2.width,
-      pos2.y + size2.height
+      pos2.y + size2.height,
     );
   }
 
@@ -132,7 +133,7 @@ export default class Game {
           this.player.pos,
           this.player.size,
           enemy.pos,
-          enemy.size
+          enemy.size,
         )
       ) {
         this.sfxStop.play();
@@ -143,7 +144,7 @@ export default class Game {
   }
 
   createTime() {
-    this.time = new Time(this.ctx, "#fff", 16, { x: 20, y: 30 }, this.scale);
+    this.time = new Time(this.ctx, '#fff', 16, { x: 20, y: 30 }, this.scale);
   }
 
   createMap() {
@@ -153,9 +154,9 @@ export default class Game {
       this.speed,
       {
         x: this.scale,
-        y: this.scaleY
+        y: this.scaleY,
       },
-      `./media/images/player_${this.playerInfo.data.type}.png`
+      `./media/images/player_${this.playerInfo.data.type}.png`,
     );
   }
 
@@ -166,15 +167,15 @@ export default class Game {
     this.createPlayer();
     this.createTime();
     this.createMap();
-    const gameEndObserver = Service.get("GameEndObserver");
+    const gameEndObserver = Service.get('GameEndObserver');
     gameEndObserver.broadcast({ isGameEnd: this.isGameEnd });
   }
 
   saveResult() {
-    let results = JSON.parse(localStorage.getItem("results")) || [];
+    let results = JSON.parse(localStorage.getItem('results')) || [];
     results.push([this.playerInfo.data.name, this.time.time]);
     const newResults = JSON.stringify(results);
-    localStorage.setItem("results", newResults);
+    localStorage.setItem('results', newResults);
   }
 
   gameOver() {
@@ -182,7 +183,7 @@ export default class Game {
     gyro.stopTracking();
     this.player.fullStop();
     this.isGameEnd = true;
-    this.scenes = Service.get("scenes");
+    this.scenes = Service.get('scenes');
     this.scenes.results.draw();
   }
 
@@ -193,9 +194,9 @@ export default class Game {
   }
 
   createSound() {
-    this.music = new Sound(this.app, "./media/sounds/music.mp3", 0.02, true);
+    this.music = new Sound(this.app, './media/sounds/music.mp3', 0.02, true);
     this.music.play();
-    this.sfxStop = new Sound(this.app, "./media/sounds/sfx_stop.mp3", 1);
+    this.sfxStop = new Sound(this.app, './media/sounds/sfx_stop.mp3', 1);
   }
 
   draw() {

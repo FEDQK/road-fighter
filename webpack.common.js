@@ -1,12 +1,12 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = {
-  entry: "./src/main.js",
+  entry: './src/main.js',
   output: {
     pathinfo: true,
-    path: path.resolve(__dirname, "dist"),
-    publicPath: "./",
-    filename: "bundle.js"
+    path: path.join(__dirname, 'dist'),
+    publicPath: '/',
+    filename: 'bundle.js',
   },
   module: {
     rules: [
@@ -14,13 +14,13 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: 'babel-loader',
+        },
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
-      }
-    ]
-  }
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
 };
